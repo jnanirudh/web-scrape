@@ -24,7 +24,7 @@ The script generates a CSV file containing the following 5 attributes for each m
 ## Prerequisites
 To run the script, ensure you have the following installed:
 - Python 3.7 or higher
-- Required Python libraries: `requests`, `BeautifulSoup4`, `pandas`
+- Required Python libraries: `Selenium`, `pandas`
 
 You can install the dependencies using pip:
 ```bash
