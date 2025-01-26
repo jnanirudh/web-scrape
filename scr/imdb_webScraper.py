@@ -13,21 +13,21 @@ driver.get(IMDB_URL)
 # wait for page to load
 time.sleep(3)
 
-# scrape movie titles, rankings, ratings, years, and number of ratings
+# scrape movie attributes
 movies = driver.find_elements(By.XPATH, "//li[contains(@class, 'ipc-metadata-list-summary-item')]")[:100]
 
 movie_list = []
 for movie in movies:
     # Movie title and ranking
     title_ranking = movie.find_element(By.XPATH, ".//h3").text
-    ranking, title = title_ranking.split(". ", 1)  # Split ranking and title
+    ranking, title = title_ranking.split(". ", 1)
 
     # Rating and number of ratings
     rating_element = movie.find_elements(By.XPATH, ".//span[contains(@class, 'ipc-rating-star')]")
     if rating_element:
-        rating_text = rating_element[0].text  # e.g., "9.3 (3M)"
+        rating_text = rating_element[0].text
         rating, num_ratings = rating_text.split(" ")
-        num_ratings = num_ratings.strip("()")  # Remove parentheses
+        num_ratings = num_ratings.strip("()")
     else:
         rating = "N/A"
         num_ratings = "N/A"
