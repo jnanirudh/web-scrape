@@ -1,26 +1,34 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import pandas as pd
+import time
+
+# IMDb Top 250 URL
+IMDB_URL = "https://www.imdb.com/chart/top/"
 
 # WebDriver set-up
 driver = webdriver.Chrome()
-driver.get("https://www.imdb.com/chart/top/")
+driver.get(IMDB_URL)
 
-# Scrape data
-movies = driver.find_elements(By.CSS_SELECTOR, "td.titleColumn")
-ratings = driver.find_elements(By.CSS_SELECTOR, "td.imdbRating strong")
+# Wait for the page to load (adjust if needed)
+time.sleep(3)
 
-data = []
-for movie, rating in zip(movies, ratings):
-    title = movie.find_element(By.TAG_NAME, "a").text
-    year = movie.find_element(By.TAG_NAME, "span").text.strip("()")
-    rank = movie.text.split(".")[0]
-    imdb_rating = rating.text
-    data.append([int(rank), title, int(year), float(imdb_rating)])
+# Scrape movie titles and ratings
+movies = driver.find_elements(By.XPATH, "//li[contains(@class, 'ipc-metadata-list-summary-item')]")[:100]
 
-# conversion
-df = pd.DataFrame(data, columns=["Ranking", "Title", "Release Year", "IMDb Rating"])
-df.to_csv("IMDb_Top_250.csv", index=False)
+movie_list = []
+for movie in movies:
+    title = movie.find_element(By.XPATH, ".//h3").text  # Movie title
+    rating_element = movie.find_elements(By.XPATH, ".//span[contains(@class, 'ipc-rating-star')]")
+    rating = rating_element[0].text if rating_element else "N/A"  # Rating if available
 
+    movie_list.append({"Title": title, "Rating": rating})
+
+# Close the driver
 driver.quit()
-print("Data saved to IMDb_Top_250.csv")
+
+# Save to CSV
+df = pd.DataFrame(movie_list, columns=["Title", "Rating"])
+df.to_csv("IMDb_Top_100.csv", index=False)
+
+print("Scraping completed! Data saved to IMDb_Top_100.csv")
